@@ -12,53 +12,53 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JsonUtils {
-    /* Constants - To hold  keys  that are needed to extract the info from JSON String */
-    private static final String LOG_TAG = JsonUtils.class.getSimpleName();
+
+    /* Constants - To hold  keys  that are needed to extract the information from JSON String */
     private static final String SANDWICH_NAME = "name";
-    private static final String SANDWICH_MAIN_NAME= "mainName";
-    private static final String SANDWICH_ALSO= "alsoKnownAs";
-    private static final String SANDWICH_PLACE_ORIGIN= "placeOfOrigin";
-    private static final String SANDWICH_DESCRIPTION= "description";
-    private static final String SANDWICH_IMAGE= "image";
-    private static final String SANDWICH_INGREDIENTS= "ingredients";
+    private static final String SANDWICH_MAIN_NAME = "mainName";
+    private static final String SANDWICH_ALSO = "alsoKnownAs";
+    private static final String SANDWICH_PLACE_ORIGIN = "placeOfOrigin";
+    private static final String SANDWICH_DESCRIPTION = "description";
+    private static final String SANDWICH_IMAGE = "image";
+    private static final String SANDWICH_INGREDIENTS = "ingredients";
 
     public static Sandwich parseSandwichJson(String json) throws JSONException {
-        JSONObject jsonObject;
+        JSONObject sandWichObject;
         String mainName = null;
         String placeOfOrigin = null;
         String description = null;
         String image = null;
-        List<String> ingredients = new ArrayList<>();
-        List<String> alsoKnownAs = new ArrayList<>();
+        List<String> ingredientsList = new ArrayList<>();
+        List<String> alsoKnownAsList = new ArrayList<>();
 
         try {
-            jsonObject = new JSONObject(json);
-            JSONObject jsonObjectName = jsonObject.getJSONObject(SANDWICH_NAME);
-            mainName = jsonObjectName.optString(SANDWICH_MAIN_NAME);
-            placeOfOrigin = jsonObject.optString(SANDWICH_PLACE_ORIGIN);
-            description = jsonObject.optString(SANDWICH_DESCRIPTION);
-            image = jsonObject.optString(SANDWICH_IMAGE);
+            //making the root JSON object from the JSON file
+            sandWichObject = new JSONObject(json);
 
-            alsoKnownAs = jsonArrayList(jsonObjectName.getJSONArray(SANDWICH_ALSO));
-            ingredients = jsonArrayList(jsonObject.getJSONArray(SANDWICH_INGREDIENTS));
+            //getting the Main jsonObject from root JSON object
+            JSONObject jsonObjectName = sandWichObject.getJSONObject(SANDWICH_NAME);
+            mainName = jsonObjectName.getString(SANDWICH_MAIN_NAME);
+            placeOfOrigin = sandWichObject.getString(SANDWICH_PLACE_ORIGIN);
+            description = sandWichObject.getString(SANDWICH_DESCRIPTION);
+            image = sandWichObject.getString(SANDWICH_IMAGE);
 
-
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, "Problems with parse", e);
-        }
-        return new Sandwich(mainName, alsoKnownAs, placeOfOrigin, description, image, ingredients);
-    }
-    private static List<String> jsonArrayList(JSONArray jsonArray){
-        List<String> list = new ArrayList<>(0);
-        if (jsonArray!=null){
-            for (int i=0; i<jsonArray.length();i++){
-                try {
-                    list.add(jsonArray.getString(i));
-                } catch (JSONException e) {
-                    Log.e(LOG_TAG, "Problems with array list", e);
+            JSONArray alsoKnwArray = jsonObjectName.getJSONArray(SANDWICH_ALSO);
+            if (alsoKnwArray != null) {
+                for (int i = 0; i < alsoKnwArray.length(); i++) {
+                    alsoKnownAsList.add(alsoKnwArray.getString(i));
                 }
             }
+
+            JSONArray ingredientArray = sandWichObject.getJSONArray(SANDWICH_INGREDIENTS);
+            if (ingredientArray != null) {
+                for (int i = 0; i < ingredientArray.length(); i++) {
+                    ingredientsList.add(ingredientArray.getString(i));
+                }
+            }
+
+        } catch (JSONException e) {
+            Log.e("Error In JSON", "Error in parssing ", e);
         }
-        return list;
+        return new Sandwich(mainName, alsoKnownAsList, placeOfOrigin, description, image, ingredientsList);
     }
 }

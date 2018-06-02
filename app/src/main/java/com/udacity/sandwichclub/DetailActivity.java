@@ -15,23 +15,33 @@ import org.json.JSONException;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.BindViews;
+import butterknife.ButterKnife;
+
 public class DetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_POSITION = "extra_position";
     private static final int DEFAULT_POSITION = -1;
 
     private Sandwich sandwich;
-    private TextView tv_also_know, tv_origin, tv_description, tv_ingredients;
+    @BindView(R.id.image_iv)
+    ImageView ingredientsIv;
+    @BindView(R.id.also_known_tv)
+    TextView tv_also_know;
+    @BindView(R.id.origin_tv)
+    TextView tv_origin;
+    @BindView(R.id.description_tv)
+    TextView tv_description;
+    @BindView(R.id.ingredients_tv)
+    TextView tv_ingredients;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-
-        ImageView ingredientsIv = findViewById(R.id.image_iv);
-        tv_also_know=findViewById(R.id.also_known_tv);
-        tv_origin=findViewById(R.id.origin_tv);
-        tv_description=findViewById(R.id.description_tv);
-        tv_ingredients=findViewById(R.id.ingredients_tv);
+//        getActionBar().setDisplayHomeAsUpEnabled(true);
+        ButterKnife.bind(this);
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -51,8 +61,7 @@ public class DetailActivity extends AppCompatActivity {
         try {
             sandwich = JsonUtils.parseSandwichJson(json);
 
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         if (sandwich == null) {
@@ -74,23 +83,24 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void populateUI() {
-        if (sandwich.getPlaceOfOrigin().isEmpty()){
+        if (sandwich.getPlaceOfOrigin().isEmpty()) {
             tv_origin.setText(R.string.no_data);
-        }else {
+        } else {
             tv_origin.setText(sandwich.getPlaceOfOrigin());
         }
-        if (sandwich.getAlsoKnownAs().isEmpty()){
+        if (sandwich.getAlsoKnownAs().isEmpty()) {
             tv_also_know.setText(R.string.no_data);
-        }else {
+        } else {
             tv_also_know.setText(listModel(sandwich.getAlsoKnownAs()));
         }
         tv_description.setText(sandwich.getDescription());
         tv_ingredients.setText(listModel(sandwich.getIngredients()));
 
     }
-    public StringBuilder listModel(List<String> list){
-        StringBuilder stringBuilder= new StringBuilder();
-        for (int i=0;i<list.size();i++){
+
+    public StringBuilder listModel(List<String> list) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
             stringBuilder.append(list.get(i)).append("\n");
         }
         return stringBuilder;
